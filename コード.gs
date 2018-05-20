@@ -18,6 +18,68 @@ function doGet() {
   return HtmlService.createTemplateFromFile("cameraSystem").evaluate().setTitle('カメラ貸出システム');
 }
 
+function doPost(e) {
+    var jsonString = e.postData.getDataAsString();
+    var data = JSON.parse(jsonString);
+    
+    var look=data.result.parameters.look;
+    var who=data.result.parameters.who;
+    if(look=="true"){
+        lookCheck();
+        return;
+    }
+    else if(who=="true"){
+        var type=data.result.parameters.type;
+        var num=data.result.parameters.no;
+        whoCheck(type, num);
+        return;
+    }
+    
+    var class=data.result.parameters.type;
+    var no=data.result.parameters.no;
+    var key=data.result.parameters.key;
+    var stNo=data.result.parameters.stNo;
+    
+    var str="";
+    
+    if(class=="C"){str=mainf(stNo, class+no, "","","","","",key);}
+    else if(class=="L"){str=mainf(stNo, "", class+no,"","","","",key);}
+    else if(class=="S"){str=mainf(stNo, "", "",class+no,"","","",key);}
+    //var result = {"speech":str, "displayText":str};
+    
+    var url = "IFTTTのURL?"+"value1="+str+"&value2="+class+no+"&value3="+key;
+    UrlFetchApp.fetch(url);
+}
+
+
+function whoCheck(type, num){
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName("シート3");
+    var lastRow=sheet.getDataRange().getLastRow(); //対象となるシートの最終行を取得
+    for(var i=2;i<=lastRow;i++){//すべての物品をチェック
+        if(sheet.getRange("A"+i).getValue()==(type+num)){
+            var name=sheet.getRange("B"+i).getValue();
+            var url = "IFTTTのURL"+"?value1="+"前回貸出者:"+name+"&value2="+type+num;
+            UrlFetchApp.fetch(url);
+        }
+    }
+}
+
+function lookCheck(){
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName("シート1");
+    var lastRow=sheet.getDataRange().getLastRow(); //対象となるシートの最終行を取得
+    for(var i=2;i<=lastRow;i++){//すべての物品をチェック
+        if(sheet.getRange("D"+i).getValue()=="貸出中"){
+            var url = "IFTTTのURL"+"?value1="+sheet.getRange("B"+i).getValue()+"&value2="+sheet.getRange("E"+i).getValue();
+            UrlFetchApp.fetch(url);
+        }
+    }
+    var url = "IFTTのURL"+"?value1=貸出中物品は以上です";
+    UrlFetchApp.fetch(url);
+}
+
+
 
 function mainf(stno, camerano, lensno, sdcfno, cameracoment, lenscoment, sdcfcoment, key){
   //スプレッドシートの取得
@@ -326,7 +388,7 @@ function check(){
           if(sheet.getRange("Z"+i).getValue()==""){
             Logger.log(num);//デバック用
             //メールの送信
-            //MailApp.sendEmail(meado, "貸出中物品の返却について", "貸出物品番号「"+num+"」の返却期限が過ぎています。返却をお願いします。\nなお、今回のお知らせと返却が行き違いになった場合はご容赦ください。\n\n\n*このメールはコンピュータにより自動送信されています。このメールに返信しないでください。\n\nfrom:卒アル委員カメラ貸出システム(https://script.google.com/macros/s/AKfycbzHFuODYdk-53alyA6J7ZZYAwEdLvXq8-KDNu2EDA/dev)");
+            //MailApp.sendEmail(meado, "貸出中物品の返却について", "貸出物品番号「"+num+"」の返却期限が過ぎています。返却をお願いします。\nなお、今回のお知らせと返却が行き違いになった場合はご容赦ください。\n\n\n*このメールはコンピュータにより自動送信されています。このメールに返信しないでください。\n\nfrom:卒アル委員カメラ貸出システム");
             sheet.getRange("Z"+i).setValue("M");
           }
         }
