@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>カメラ貸出システム</title>
+  <?!= HtmlService.createHtmlOutputFromFile("index.js").getContent(); ?>
+  <?!= HtmlService.createHtmlOutputFromFile("index.css").getContent(); ?>
+  <?!= HtmlService.createHtmlOutputFromFile("loading.css").getContent(); ?>
+</head>
+<body>
+  <h1 class="title">カメラ貸出システム</h1>
+  <form>
+    <table align="center" class="table">
+      <tr>
+        <td class="inputType">学籍番号</td>
+        <td class="input">
+          <input type="text" class="inputText" id="studentNo">
+        </td>
+        <td class="must">*必須*</td>
+      </tr>
+      <tr>
+        <td class="inputType">カメラ番号</td>
+        <td class="input">
+          <input type="text" class="inputText" id="cameraNo">
+        </td>
+        <td class="comment">
+          備考<input type="text" id="cameraComment">
+        </td>
+      </tr>
+      <tr>
+        <td class="inputType">レンズ番号</td>
+        <td class="input">
+          <input type="text" class="inputText" id="lensNo">
+        </td>
+        <td class="comment">
+          備考<input type="text" id="lensComment">
+        </td>
+      </tr>
+      <tr>
+        <td class="inputType">SD, CF番号</td>
+        <td class="input">
+          <input type="text" class="inputText" id="sdcfNo">
+        </td>
+        <td class="comment">
+          備考<input type="text" id="sdcfComment">
+        </td>
+      </tr>
+    </table>
+
+    <div class="buttons">
+      <input type="button" value="貸出" class="sendButton" onclick="Lend();">
+      <input type="button" value="返却" class="sendButton" onclick="EndLend();">
+      <input type="button" value="返却期限確認" class="sendButton" onclick="CheckLendLimit();">
+      <input type="button" value="貸出中物品一覧照会" class="sendButton" onclick="CheckLendData();">
+    </div>
+  </form>
+
+  <div class="infomation">
+    <u class="infoTitle">お知らせ</u>
+    <ul id="infoList"></ul>
+  </div>
+  <div class="loadingMask" id="loadAnim">
+    <div class="loadingPos">
+      <div class="loader">Loading...</div>
+    </div>
+  </div>
+</body>
+</html>

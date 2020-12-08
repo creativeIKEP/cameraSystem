@@ -1,0 +1,87 @@
+<script>
+  //貸出が押された時実行
+  function Lend(){
+    //処理中と表示
+    document.getElementById("loadAnim").style.display="block";
+
+    //入力された学生番号、カメラ番号、レンズ番号、sdcf番号、備考をコピー
+    const stno = document.getElementById("studentNo").value;
+    const cno = document.getElementById("cameraNo").value;
+    const lno = document.getElementById("lensNo").value;
+    const sdcfno = document.getElementById("sdcfNo").value;
+    const cameraComment = document.getElementById("cameraComment").value;
+    const lensComment = document.getElementById("lensComment").value;
+    const sdcfComment = document.getElementById("sdcfComment").value;
+
+    //.gsファイルのLendOrReturn関数を実行後、return値をSuccessCallbackAlertに送って実行
+    google.script.run.withSuccessHandler(SuccessCallbackAlert).withFailureHandler(FailCallback)
+    .LendOrReturn(stno, cno, lno, sdcfno, cameraComment, lensComment, sdcfComment, "貸出");
+  }
+
+
+  //返却が押された時実行
+  //貸出と同じように実行
+  function EndLend(){
+    //処理中と表示
+    document.getElementById("loadAnim").style.display="block";
+
+    const stno = document.getElementById("studentNo").value;
+    const cno = document.getElementById("cameraNo").value;
+    const lno = document.getElementById("lensNo").value;
+    const sdcfno = document.getElementById("sdcfNo").value;
+    const cameraComment = document.getElementById("cameraComment").value;
+    const lensComment = document.getElementById("lensComment").value;
+    const sdcfComment = document.getElementById("sdcfComment").value;
+
+    //.gsファイルのLendOrReturn関数を実行後、return値をSuccessCallbackAlertに送って実行
+    google.script.run.withSuccessHandler(SuccessCallbackAlert).withFailureHandler(FailCallback)
+    .LendOrReturn(stno, cno, lno, sdcfno, cameraComment, lensComment, sdcfComment, "返却");
+  }
+
+
+  //返却期限確認ボタンが押されたら実行
+  function CheckLendLimit(){
+    document.getElementById("loadAnim").style.display="block";
+    const stno=document.getElementById("studentNo").value;
+    //.gsファイルのCheckUserLendLimit関数を実行後、return値をSuccessCallbackAlertに送って実行
+    google.script.run.withSuccessHandler(SuccessCallbackAlert).withFailureHandler(FailCallback).CheckUserLendLimit(stno);
+  }
+
+
+  //貸出中物品一覧照会ボタンが押されたら実行
+  function CheckLendData(){
+    document.getElementById("loadAnim").style.display="block";
+    //.gsファイルのLendData関数を実行後、return値をSuccessCallbackAlertに送って実行
+    google.script.run.withSuccessHandler(SuccessCallbackAlert).withFailureHandler(FailCallback).LendData();
+  }
+
+
+  function SuccessCallbackAlert(message){
+    //gsでretunされた文字列を受け取る
+    //「処理中」表示を消して受け取った文字列をアラート表示
+    document.getElementById("loadAnim").style.display="none";
+    alert(message);
+  }
+
+  function FailCallback(message){
+    document.getElementById("loadAnim").style.display="none";
+    alert(message+"\n(お困りでしたら管理者にお問い合わせください)");
+  }
+
+
+  google.script.run.withSuccessHandler(GetInfomationCallback).getInfomation();
+
+  function GetInfomationCallback(infoList){
+    infoList.forEach(function(info){
+      const list = document.createElement("li");
+      list.textContent = info;
+      document.getElementById("infoList").appendChild(list);
+    });
+    document.getElementById("loadAnim").style.display="none";
+  }
+
+  function GetInfomationFailedCallback(){
+    document.getElementById("loadAnim").style.display="none";
+    alert("「お知らせ」を取得できませんでした。");
+  }
+</script>
